@@ -135,9 +135,15 @@ module.exports = async function handler(req, res) {
     console.log('LISICHKA_DIAG: GigaChat success; model:', model);
     return res.status(200).json({ reply: replyText });
   } catch (error) {
-    console.error('LISICHKA_DIAG: GigaChat internal error', error.message || String(error));
+    console.error('LISICHKA_DIAG: GigaChat internal error', {
+      message: error.message,
+      cause: error.cause?.message,
+      code: error.cause?.code,
+      name: error.name,
+      status: error.status
+    });
+
     return res.status(error.status === 401 || error.status === 403 ? 502 : 500).json({
-      error: error.message || 'Лисичка временно недоступна. Попробуйте ещё раз.'
+      error: 'Не удалось подключиться к GigaChat. Подробности находятся в журнале сервера.'
     });
   }
-};
